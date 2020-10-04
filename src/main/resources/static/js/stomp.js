@@ -60,9 +60,9 @@ var app = (function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/buyticket', function (eventbody) {
-               console.alert("evento recibido");
-               var theObject=JSON.parse(eventbody.body);
+            stompClient.subscribe('/topic/buyticket', function (message) {
+               alert("evento recibido");
+               var theObject = JSON.parse(message.body);
 
             });
         });
@@ -74,7 +74,8 @@ var app = (function () {
         if (seats[row][col]===true){
             seats[row][col]=false;
             console.info("purchased ticket");
-            stompClient.send("/app/buyticket", {}, JSON.stringify(st)); 
+            stompClient.send("/topic/buyticket", {}, JSON.stringify(st));
+            //stompClient.send("/app/buyticket", {}, JSON.stringify(st));
             
         }
         else{

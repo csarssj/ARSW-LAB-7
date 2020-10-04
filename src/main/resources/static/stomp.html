@@ -23,11 +23,14 @@ and open the template in the editor.
         Your browser does not support the HTML5 canvas tag.
         </canvas>
             <form action="/action_page.php">
-                <label for="row">Row:</label>
+                <!-- Aquí empieza la cabecera de la web -->
+               <!-- <label for="row">Row:</label>
                 <input type="text" id="row" name="fila" placeholder="# of the row">
                 <label for="column">Column:</label>
                 <input type="text" id="column" name="columna" placeholder="# of the column">
                 <button type="button" class="btn btn-primary" onclick="app.buyTicket($('#row').val(),$('#column').val())">Buy ticket</button>
+                Fin de la cabecera -->
+                <button type="button" class="btn btn-primary" onclick="app.getMousePosition()">Buy ticket</button>
             </form>
         </div>
     </body>

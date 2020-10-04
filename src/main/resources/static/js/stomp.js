@@ -16,13 +16,13 @@ var app = (function () {
     //get the x, y positions of the mouse click relative to the canvas
     var getMousePosition = function (evt) {
         $('#myCanvas').click(function (e) {
-            var rect = canvas.getBoundingClientRect();
+            var rect = myCanvas.getBoundingClientRect();
             var x = e.clientX - rect.left;
             var y = e.clientY - rect.top;
             console.info(x);
             console.info(y);
+            calcSeat(x,y);
         });
-  
     };
     
     var drawSeats = function (cinemaFunction) {
@@ -68,12 +68,51 @@ var app = (function () {
         });
 
     };
+    var calcSeat = function(row,col){
+        if(!(row >= 20 && row <= 480 && col >= 120 && col <= 380)){
+            alert("tiene que seleccionar una silla");
+        }else{
+            var row1 = 5;
+            var col1 = 0;
+            var enviar = false;
+            for (var i = 0; i < seats.length; i++) {
+                row1++;
+                col1 = 0;
+                for (j = 0; j < seats[i].length; j++) {
+                    if(seats[i][j]){
+                       console.log(row,col);
+                       console.log((col1+1)*20,((col1+1)*20)+20);
+                       console.log((row1)*20,((row1)*20)+20);
+                        if(row1*20 <= col && (row1*20)+20 >= col){
+                            //console.log("entra 1");
+                            if(((col1+1)*20<=row && ((col1+1)*20)+20) >= row){
+                               // console.log("entra 2");
+                               // console.log((col1+1)*20,((col1+1)*20)+20);
+                                //console.log((row1)*20,((row1)*20)+20);
+                                //enviar = true;
+                                verifyAvailability(i,j);
+                            }
+                        }
+                        col1++;
+                        if(enviar){
+                            verifyAvailability(i,j);
+                        }
+                        //ctx.fillRect(20 * col, 20 * row, 20, 20);
+                        col1++;
+                    }
+                }
+                row1++;
+            }
 
+        }
+    };
     var verifyAvailability = function (row,col) {
         var st = new Seat(row, col);
         if (seats[row][col]===true){
             seats[row][col]=false;
             console.info("purchased ticket");
+            //ctx.fillStyle = "#FF0000";
+            //ctx.fillRect(20 * col, 20 * row, 20, 20);
             stompClient.send("/topic/buyticket", {}, JSON.stringify(st));
             //stompClient.send("/app/buyticket", {}, JSON.stringify(st));
             
@@ -81,7 +120,8 @@ var app = (function () {
         else{
             console.info("Ticket not available");
         }  
-
+        //caclSeats(row,col);
+        drawSeats();
     };
 
 
@@ -96,10 +136,10 @@ var app = (function () {
         },
 
         buyTicket: function (row, col) {
-            console.info("buying ticket at row: " + row + "col: " + col);
-            verifyAvailability(row,col);
-            
-            //buy ticket
+                    console.info("buying ticket at row: " + row + "col: " + col);
+                    verifyAvailability(row,col);
+
+                    //buy ticket
         },
 
         disconnect: function () {
@@ -108,7 +148,8 @@ var app = (function () {
             }
             setConnected(false);
             console.log("Disconnected");
-        }
+        },
+        getMousePosition:getMousePosition
     };
 
 })();

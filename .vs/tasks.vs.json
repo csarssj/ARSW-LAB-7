@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "tarea-CinemaAPIApplication",
+      "appliesTo": "src/main/java/edu/eci/arsw/cinema/CinemaAPIApplication.java",
+      "type": "launch"
+    }
+  ]
+}

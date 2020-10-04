@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 /**
  *
- * @author cristian
+ * @author ceseg
  */
 @SpringBootApplication
 @ComponentScan(basePackages = {"edu.eci.arsw.cinema"})

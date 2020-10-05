@@ -36,7 +36,7 @@ var app = (function (){
             calcSeat(x,y);
         });
     };
-var connectAndSubscribe = function () {
+var connectAndSubscribe = function (fun) {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
@@ -44,7 +44,7 @@ var connectAndSubscribe = function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/buyticket', function (message) {
+            stompClient.subscribe('/topic/buyticket.' + fun, function (message) {
                alert("evento recibido");
                var theObject = JSON.parse(message.body);
 
@@ -86,8 +86,6 @@ var connectAndSubscribe = function () {
         }
     };
     var verifyAvailability = function (row,col) {
-        console.log(row);
-        console.log(col);
         var st = new Seat(row, col);
         if (currentCinema.seats[row][col]===true){
             currentCinema.seats[row][col]=false;
@@ -150,8 +148,6 @@ var connectAndSubscribe = function () {
         if (cinema_name != "" && cinema_date != "" ) {
             $('#cinemaname').html(cinema_name);
             api.getFunctionsByCinemaAndDate(cinema_name,cinema_date,table);
-            //api.getFunctionsByCinemaAndDate(cinema_name,cinema_date,fun);
-            //api.getFunctionsByCinema(cinema_name,fun);
         }
     };
 	var getFunctionsByCinemaAndDateAndMovie =  function (cinema_date,cinema_movie) {
@@ -159,6 +155,8 @@ var connectAndSubscribe = function () {
         setMovie(cinema_movie);
         if (cine != "" && cinema_date != "" ) {
             api.getFunctionsByCinemaAndDateAndMovie(cine,cinema_date,cinema_movie,getSeats);
+            fun = cine + "." + date + "." + movie;
+            connectAndSubscribe(fun);
         }
     };
     var updateAndSave =  function () {
@@ -198,33 +196,6 @@ var connectAndSubscribe = function () {
 
     };
     var createFunction = function (){
-      //   newf = true;
-        /* var wrapper = $(".container1");
-             var add_button = $(".col-xl-6");
-             var x= 0
-             $(add_button).click(function(e) {
-                 e.preventDefault();
-                     if(x<1){
-                     $(wrapper).append('<label for="fnewname">Edit Function :</label>');
-                     $(wrapper).append('<input type="text" id="fnewname" name="fnewname" value="new name"/></br>');
-                     //$(wrapper).append('<div><input type="text" name="mytext[]"/><a href="#" class="delete">Delete</a></div>');
-                     $(wrapper).append('<label for="fnewgenre">Edit Function :</label>');
-                     $(wrapper).append('<input type="text" id="fnewgenre" name="fnewgenre" value="new genre"/></br>');
-                     //$(wrapper).append('<div><input type="text" name="mytext[]"/><a href="#" class="delete">Delete</a></div>');
-                     $(wrapper).append('<label for="fnewhour">Edit Function :</label>');
-                     $(wrapper).append('<input type="text" id="fnewhour" name="fnewhour" value="new hour"/></br>');
-                     //$(wrapper).append('<button type="button" class="btn btn-primary" onclick="app.createNewFunction( $('#fnewname').val(),$('#fnewgenre').val(),$('#fnewhour').val())">Insert</button></div>');//add input box
-                     x++;
-                     }
-             });
-
-             /*$(wrapper).on("click", ".insert", function(e) {
-                 e.preventDefault();
-                 $(this).parent('div').remove();
-                 console.log($("#fnewname").val());
-                 createNewFunction ($("#fnewname").val(),$("#fnewgenre").val(),$("#fnewhour").val());
-
-         })*/
     };
     var deleteFunction = function(){
         if (cine != ""){
@@ -238,8 +209,6 @@ var connectAndSubscribe = function () {
     var getSeats = function (func) {
             setCinema(func);
             currentCinema.seats = func.seats;
-            console.log(currentCinema.seats);
-            console.log(func.seats);
             var c = document.getElementById("myCanvas");
             var ctx = c.getContext("2d");
             ctx.fillStyle = "#001933";
@@ -301,10 +270,10 @@ var connectAndSubscribe = function () {
 		createFunction:createFunction,
 		createNewFunction:createNewFunction,
 		deleteFunction:deleteFunction,
-        init: function () {
+       /* init: function () {
             //websocket connection
             connectAndSubscribe();
-        },
+        },*/
 
         buyTicket: function (row, col) {
                     console.info("buying ticket at row: " + row + "col: " + col);

@@ -47,6 +47,7 @@ var connectAndSubscribe = function (fun) {
             stompClient.subscribe('/topic/buyticket.' + fun, function (message) {
                alert("evento recibido");
                var theObject = JSON.parse(message.body);
+               verifyAvailability(theObject.row,theObject.col);
 
             });
         });
@@ -91,7 +92,7 @@ var connectAndSubscribe = function (fun) {
             currentCinema.seats[row][col]=false;
             //seat=false;
             console.info("purchased ticket");
-            stompClient.send("/topic/buyticket", {}, JSON.stringify(st));
+            stompClient.send("/app/buyticket."+cine+"."+date+"."+movie, {}, JSON.stringify(st));
 
         }
         else{

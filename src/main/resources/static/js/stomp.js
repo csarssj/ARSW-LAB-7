@@ -1,4 +1,4 @@
-var app = (function () {
+var app1 = (function () {
 
     var seats = [[true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
     var c,ctx;
@@ -80,24 +80,12 @@ var app = (function () {
                 col1 = 0;
                 for (j = 0; j < seats[i].length; j++) {
                     if(seats[i][j]){
-                       console.log(row,col);
-                       console.log((col1+1)*20,((col1+1)*20)+20);
-                       console.log((row1)*20,((row1)*20)+20);
                         if(row1*20 <= col && (row1*20)+20 >= col){
-                            //console.log("entra 1");
                             if(((col1+1)*20<=row && ((col1+1)*20)+20) >= row){
-                               // console.log("entra 2");
-                               // console.log((col1+1)*20,((col1+1)*20)+20);
-                                //console.log((row1)*20,((row1)*20)+20);
-                                //enviar = true;
                                 verifyAvailability(i,j);
                             }
                         }
                         col1++;
-                        if(enviar){
-                            verifyAvailability(i,j);
-                        }
-                        //ctx.fillRect(20 * col, 20 * row, 20, 20);
                         col1++;
                     }
                 }
@@ -111,10 +99,7 @@ var app = (function () {
         if (seats[row][col]===true){
             seats[row][col]=false;
             console.info("purchased ticket");
-            //ctx.fillStyle = "#FF0000";
-            //ctx.fillRect(20 * col, 20 * row, 20, 20);
             stompClient.send("/topic/buyticket", {}, JSON.stringify(st));
-            //stompClient.send("/app/buyticket", {}, JSON.stringify(st));
             
         }
         else{

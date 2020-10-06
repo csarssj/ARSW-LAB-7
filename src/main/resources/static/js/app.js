@@ -40,7 +40,6 @@ var connectAndSubscribe = function (fun) {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
-
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
@@ -92,8 +91,7 @@ var connectAndSubscribe = function (fun) {
             currentCinema.seats[row][col]=false;
             //seat=false;
             console.info("purchased ticket");
-            stompClient.send("/app/buyticket."+cine+"."+date+"."+movie, {}, JSON.stringify(st));
-
+            stompClient.send("/app/buyticket."+cine+"."+date+"."+movie, {}, JSON.stringify(st))
         }
         else{
             console.info("Ticket not available");

@@ -28,7 +28,7 @@ y para ejecutar las dos partes ingresamos :
 Este ejercicio se basa en la documentación oficial de SpringBoot, para el manejo de WebSockets con STOMP.
 En este repositorio se encuentra una aplicación SpringBoot que está configurado como Broker de mensajes, de forma similar a lo mostrado en la siguiente figura:
 
-	![image](https://github.com/csarssj/ARSW-LAB-7/blob/master/img/1.png)
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/1.png)
 	
 En este caso, el manejador de mensajes asociado a "/app" aún no está configurado, pero sí lo está el broker '/topic'. Como mensaje, se usarán localizaciones de pantalla, pues se espera que esta aplicación permita propagar eventos de compra de asientos seleccionando en el canvas el asiento deseado. Este proyecto parte como continuación a el proyecto de compra/reserva de tickets.
 
@@ -37,7 +37,7 @@ En este caso, el manejador de mensajes asociado a "/app" aún no está configura
 1. Para las partes I y II, usted va a implementar una herramienta que permita integrarse al proyecto de el proyecto de compra/reserva de tickets, basada en el siguiente diagrama de actividades:
 	
 	
-	![image](https://github.com/csarssj/ARSW-LAB-7/blob/master/img/2.png)
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/2.png)
 	
 Para esto, realice lo siguiente:
 1. Agregue en la parte inferior del canvas dos campos para la captura de las posiciones de los asientos a comprar (row, col), y un botón 'Buy ticket' para hacer efectiva la compra
@@ -77,8 +77,8 @@ Para esto, realice lo siguiente:
 5. Ingrese a una función, ingrese los datos, ejecute la acción del botón, y verifique que en todas la pestañas se haya lanzado la alerta con los datos ingresados.
 6. Haga commit de lo realizado, para demarcar el avance de la parte 2.
 	
-	![image](https://github.com/csarssj/ARSW-LAB-6/blob/master/img/3.png)
-	![image](https://github.com/csarssj/ARSW-LAB-7/blob/master/img/4.png)
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/3.png)
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/4.png)
 
 ## Parte II
 
@@ -152,9 +152,11 @@ Para hacer mas útil la aplicación, en lugar de capturar las coordenadas con ca
 4. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que selecciona un asiento (es decir realiza la compra del mismo ahora sin necesidad del botón), la compra del mismo es replicada en todas las instancias abiertas de la aplicación (el color de las sillas verdes disponibles debe cambiar a rojo).
 5. Haga commit de lo realizado, para marcar el avance de la parte 2.
 
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/5.png)
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/6.png)
 	
-## Nota
-Toca volver a hacer clic en Get Functions para ver los cambios realizados.	
+## Parte II
+
 
 ## Authors
 

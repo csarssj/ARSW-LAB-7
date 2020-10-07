@@ -44,13 +44,11 @@ var connectAndSubscribe = function (fun) {
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/buyticket.' + fun, function (message) {
-               alert("evento recibido");
+             //  alert("evento recibido");
                var theObject = JSON.parse(message.body);
                verifyAvailability(theObject.row,theObject.col);
-
             });
         });
-
     };
     var calcSeat = function(row,col){
         if(!(row >= 20 && row <= 480 && col >= 120 && col <= 380)){
@@ -58,22 +56,16 @@ var connectAndSubscribe = function (fun) {
         }else{
             var row1 = 5;
             var col1 = 0;
-          //  var enviarX = null;
-          //  var enviarY = null;
             console.log(currentCinema.seats);
             for (var i = 0; i < currentCinema.seats.length; i++) {
                 row1++;
                 col1=0;
-                //enviarX =currentCinema.seats.indexOf(x);
                 for (j = 0; j < currentCinema.seats[i].length; j++) {
-                    //enviarY =x.indexOf(y);
-                    if(currentCinema.seats[i][j]){
-                        if(row1*20 <= col && (row1*20)+20 >= col){
-                            if(((col1+1)*20<=row && ((col1+1)*20)+20) >= row){
-                                //console.log(enviarX);
-                                //console.log(enviarY);
-                                //verifyAvailability(enviarX,enviarY);
+                    if(row1*20 <= col && (row1*20)+20 >= col){
+                        if(((col1+1)*20<=row && ((col1+1)*20)+20) >= row){
+                            if(currentCinema.seats[i][j]){
                                 verifyAvailability(i,j);
+                                break;
                             }
                         }
                         col1++;
@@ -233,26 +225,7 @@ var connectAndSubscribe = function (fun) {
                 row++;
             }
     };
-    /*var getSeats =  function (func) {
-        setCinema(func);
-        currentCinema.seats = func.seats;
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
-        var y1=40;
-        for (x of currentCinema.seats){
-            var x1=0;
-            for (y of x){
-                if(y==true){
-                    ctx.fillStyle = "blue";
-                }
-                else{ctx.fillStyle = "red";}
-                x1+=40;
-                ctx.fillRect(x1, y1  ,30, 30);
-            }
-            y1  +=45;
-        }
 
-    };*/
     var fun=function(list){
         console.log(list);
         console.log(cine);

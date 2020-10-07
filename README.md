@@ -155,7 +155,110 @@ Para hacer mas útil la aplicación, en lugar de capturar las coordenadas con ca
 	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/5.png)
 	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/6.png)
 	
-## Parte II
+## Parte III
+
+Ajuste la aplicación anterior para que pueda manejar la compra de asientos en más de una sala a la vez, manteniendo tópicos independientes. Para esto:
+1. Agregue tres campo en la vista: nombre del cinema, fecha de la función y nombre de la película. La concatenación de estos datos corresponderá al identificador de la función.
+2. Modifique la aplicación para que, en lugar de conectarse y suscribirse automáticamente (en la función init()), lo haga a través de botón 'conectarse'. Éste, al oprimirse debe realizar la conexión y suscribir al cliente a un tópico que tenga un nombre dinámico, asociado el identificador mencionado anteriormente, por ejemplo: /topic/buyticket.cinemaX.2018-12-19.SuperHeroes_Movie, /topic/buyticket.cinemaY.2018-12-19.The_Enigma, para las funciones del CinemaX y CinemaY respectivas.
+
+	```javascript
+	var getFunctionsByCinemaAndDateAndMovie =  function (cinema_date,cinema_movie) {
+        console.log(cinema_date);
+        setMovie(cinema_movie);
+        if (cine != "" && cinema_date != "" ) {
+            api.getFunctionsByCinemaAndDateAndMovie(cine,cinema_date,cinema_movie,getSeats);
+            fun = cine + "." + date + "." + movie;
+            connectAndSubscribe(fun);
+        }
+    };
+	```
+
+3. De la misma manera, haga que las publicaciones se realicen al tópico asociado al identificador ingresado por el usuario.
+
+	```javascript
+	var connectAndSubscribe = function (fun) {
+        console.info('Connecting to WS...');
+        var socket = new SockJS('/stompendpoint');
+        stompClient = Stomp.over(socket);
+        //subscribe to /topic/TOPICXX when connections succeed
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/buyticket.' + fun, function (message) {
+               alert("evento recibido");
+               var theObject = JSON.parse(message.body);
+               verifyAvailability(theObject.row,theObject.col);
+            });
+        });
+    };
+	```
+	
+4. Rectifique que se puedan realizar dos compras de asientos de forma independiente, cada uno de éstos entre dos o más clientes.
+	
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/7.png)
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/8.png)
+	
+## Parte IV
+
+Para la parte IV, usted va a implementar una versión extendida del modelo de actividades y eventos anterior, en la que el servidor (que hasta ahora sólo fungía como Broker o MOM -Message Oriented Middleware-) se volverá también suscriptor de ciertos eventos, para a partir de los mismos agregar la funcionalidad de 'compra/reserva de entradas de cine':
+	
+	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/c1.png)
+	
+Para esto, se va a hacer una configuración alterna en la que, en lugar de que se propaguen los mensajes 'buyticket.{cinemaName}.{functionDate}.{movieName}' entre todos los clientes, éstos sean recibidos y procesados primero por el servidor, de manera que se pueda decidir qué hacer con los mismos.
+Para ver cómo manejar esto desde el manejador de eventos STOMP del servidor, revise puede revisar la documentación de Spring.
+1. Cree una nueva clase que haga el papel de 'Controlador' para ciertos mensajes STOMP (en este caso, aquellos enviados a través de "/app/buyticket.{cinemaName}.{functionDate}.{movieName}"). A este controlador se le inyectará un bean de tipo SimpMessagingTemplate, un Bean de Spring que permitirá publicar eventos en un determinado tópico. Por ahora, se definirá que cuando se intercepten los eventos enviados a "/app/buyticket.{cinemaName}.{functionDate}.{movieName}" (que se supone deben incluir un asiento), se mostrará por pantalla el asiento recibido, y luego se procederá a reenviar el evento al tópico al cual están suscritos los clientes "/topic/buyticket".
+	```java
+	@Controller
+	public class STOMPMessagesHandler {
+    @Autowired
+    SimpMessagingTemplate msgt;
+    @Autowired
+    CinemaServices cinemaServices;
+
+    @MessageMapping("/buyticket.{cinemaName}.{functionDate}.{movieName}")
+    public void handleBuyEvent(Seat st, @DestinationVariable String cinemaName, @DestinationVariable String functionDate, @DestinationVariable String movieName) throws Exception {
+        System.out.println("Nuevo asiento recibido en el servidor!:"+st);
+        cinemaServices.buyTicket(st.getCol(), st.getRow(),cinemaName, functionDate,movieName);
+        msgt.convertAndSend("/topic/buyticket."+cinemaName+"."+functionDate+"."+movieName, st);
+    }
+	}
+	```
+2. Ajuste su cliente para que, en lugar de publicar los puntos en el tópico /topic/buyticket.{cinemaname}, lo haga en /app/buyticket.{cinemaname}. Ejecute de nuevo la aplicación y rectifique que funcione igual, pero ahora mostrando en el servidor los detalles de los puntos recibidos.
+3. Una vez rectificado el funcionamiento, se quiere aprovechar este 'interceptor' de eventos para cambiar ligeramente la funcionalidad :
+	1. Como puede observar, actualmente se utiliza un arreglo de asientos que representa una sala en el archivo stomp.js 'var seats', esto hace que la aplicación sea inconsistente de modo que cada pestaña tiene su propio arreglo de asientos. Para arreglar esto y centralizar hasta cierto punto la información de las salas y sus asientos, se va a manejar la persistencia desde el servidor. Por esta razón a partir de ahora se hará una integración con el proyecto de compra/reserva de tickets trabajado anteriormente, para esto, por tanto ahora se volverá a trabajar sobre los archivos index.html y app.js del proyecto.
+	2.	Volviendo a la aplicación alojada en index.html y app.js, modifique lo que sea necesario para que a la hora de que se consulten las funciones de un determinado cine y se oprima el botón 'Open Seats' de una función, la aplicación se suscriba al tópico respectivo.
+	3. Agregue y habilite el botón 'buy ticket', con la misma funcionalidad de la parte II Punto 3.2, y la funcionalidad de la parte II Punto 3.3
+	4. El manejador de eventos del servidor /app/buyticket.{cinemaName}.{functionDate}.{movieName} , además de propagar los asientos a través del tópico '/topic/buyticket', llevará el control de los asientos recibidos (que podrán haber sido comprados por diferentes clientes) para esto debe utilizar la implementación de la clase 'CinemaPersistence' y garantizar el adecuado control de la persistencia, recuerde que se realizará concurrentemente, de manera que REVISE LAS POSIBLES CONDICIONES DE CARRERA!.
+	5. Verifique la funcionalidad (preferiblemente incógnito o varios ordenadores):
+		1. Ingrese en una pestaña (P1) a una función y compre un asiento, después de esto ingrese en otra pestaña (P2) e ingrese a la misma función, debería verse replicado que el asiento está lleno,
+			
+			* P1:	
+				![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/9.png)
+			* P2:
+				![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/10.png)
+			
+		2. Ahora en otra pestaña (P3) ingrese a otra función, esta no debería tener replicada la compra de ese asiento.
+			
+			* P3:
+				![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/11.png)
+				
+		
+		3. Ingrese a la P2, y compre otro asiento, esta compra debe verse reflejada en la P1 y P2, mas no en la P3
+		
+			* P1 y p2:	
+				![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/12.png)
+			* P3:
+				![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/13.png)
+			
+		4. Pruebe la funcionalidad comprando tickets en más de 2 salas al tiempo y verificando que no se cruce la compra de los asientos de una sala a otra
+		
+			* P1:
+				![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/14.png)
+			* P2: 
+				![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/15.png)
+		
+4. A partir de los diagramas dados en el archivo ASTAH incluido, haga un nuevo diagrama de actividades correspondiente a lo realizado hasta este punto, teniendo en cuenta el detalle de que ahora se tendrán tópicos dinámicos para manejar diferentes salas simultáneamente y que desde el servidor se centraliza la información de las asientos de las salas.
+5. Haga commit de lo realizado.
+
 
 
 ## Authors

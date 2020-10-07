@@ -193,8 +193,7 @@ Ajuste la aplicación anterior para que pueda manejar la compra de asientos en m
 	```
 	
 4. Rectifique que se puedan realizar dos compras de asientos de forma independiente, cada uno de éstos entre dos o más clientes.
-	
-	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/7.png)
+
 	![image](https://github.com/csarssj/ARSW-LAB-7/blob/main/img/8.png)
 	
 ## Parte IV
